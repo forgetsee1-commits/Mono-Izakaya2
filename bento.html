@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Бенто-ланч — Моно изакая</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #efe9df;
+    --ink: #1a1a1a;
+    --muted: #4a443c;
+    --line: #d6cdbf;
+    --accent: #8b2c2c;
+    --card: #f5f0e8;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; overflow-x: hidden; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+  @media (max-width: 500px) { .wrap { padding: 0 20px; } }
+
+  .topbar { position: fixed; top: 0; left: 0; right: 0; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 100; background: rgba(239,233,223,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .logo { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 20px; letter-spacing: 0.25em; color: var(--ink); text-decoration: none; text-transform: uppercase; z-index: 102; }
+  .logo span { color: var(--accent); }
+  .topnav { display: flex; gap: 32px; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .topnav a { color: var(--muted); text-decoration: none; transition: color 0.2s; padding: 4px 0; }
+  .topnav a:hover { color: var(--accent); }
+  .topnav a.active { color: var(--accent); }
+  .top-phone { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink); text-decoration: none; padding: 8px 16px; border: 1px solid var(--line); transition: all 0.2s; }
+  .top-phone:hover { border-color: var(--accent); color: var(--accent); }
+
+  .burger { display: none; background: none; border: none; cursor: pointer; padding: 8px; z-index: 102; }
+  .burger span { display: block; width: 22px; height: 1.5px; background: var(--ink); margin: 5px 0; transition: all 0.3s; }
+  .burger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); background: var(--accent); }
+  .burger.open span:nth-child(2) { opacity: 0; }
+  .burger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); background: var(--accent); }
+
+  .mobile-menu { position: fixed; inset: 0; background: var(--bg); z-index: 101; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .mobile-menu.open { opacity: 1; pointer-events: all; }
+  .mobile-menu a { font-family: 'Cormorant Garamond', serif; font-size: 26px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); text-decoration: none; }
+  .mobile-menu .mobile-phone { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); margin-top: 20px; padding: 14px 28px; border: 1px solid var(--accent); }
+
+  @media (max-width: 900px) { .topnav { display: none; } .top-phone { display: none; } .burger { display: block; } }
+
+  .page-head { padding: 160px 0 40px; text-align: center; }
+  @media (max-width: 600px) { .page-head { padding: 120px 0 30px; } }
+  .breadcrumbs { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 28px; }
+  .breadcrumbs a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .breadcrumbs a:hover { color: var(--accent); }
+  .breadcrumbs span { color: var(--accent); }
+  .page-head h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(48px, 9vw, 110px); font-weight: 600; line-height: 0.95; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
+  .page-head h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+  .page-head p { font-size: 15px; color: var(--muted); max-width: 560px; margin: 0 auto; }
+
+  .bento-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    margin-bottom: 64px;
+  }
+  @media (max-width: 900px) { .bento-hero { grid-template-columns: 1fr; gap: 32px; } }
+
+  .bento-hero-image {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 40px 80px -40px rgba(0,0,0,0.35);
+  }
+  .bento-hero-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  @media (max-width: 900px) { .bento-hero-image { aspect-ratio: 4 / 3; } }
+
+  .bento-info { padding: 0; }
+  .bento-info .section-num { display: block; margin-bottom: 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.25em; text-transform: uppercase; }
+  .bento-info h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4vw, 48px); font-weight: 600; line-height: 1.1; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 24px; }
+  .bento-info h2 em { font-style: italic; font-weight: 400; color: var(--accent); }
+  .bento-info p { font-size: 16px; color: var(--muted); line-height: 1.8; margin-bottom: 20px; }
+
+  .info-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-bottom: 48px; }
+  .info-item { padding: 28px 20px; background: var(--bg); text-align: center; }
+  .info-item-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 10px; }
+  .info-item-value { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--ink); letter-spacing: 0.05em; }
+  .info-item-value em { font-style: italic; color: var(--accent); }
+
+  .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .bento-card { padding: 40px 32px; background: var(--bg); transition: background 0.3s; }
+  .bento-card:hover { background: var(--card); }
+  .bento-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.25em; margin-bottom: 18px; }
+  .bento-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; line-height: 1.15; margin-bottom: 18px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .bento-card p { font-size: 14px; color: var(--muted); line-height: 1.8; margin-bottom: 24px; }
+  .bento-price { font-family: 'JetBrains Mono', monospace; font-size: 20px; color: var(--ink); font-weight: 400; padding-top: 20px; border-top: 1px solid var(--line); letter-spacing: 0.05em; }
+
+  .cta { background: var(--ink); color: var(--bg); padding: 72px 48px; text-align: center; margin-top: 48px; }
+  @media (max-width: 600px) { .cta { padding: 48px 24px; } }
+  .cta h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 5vw, 56px); font-weight: 600; line-height: 1.05; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; }
+  .cta h2 em { font-style: italic; color: var(--accent); }
+  .cta p { color: rgba(239,233,223,0.7); margin-bottom: 32px; font-size: 15px; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 32px; font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none; transition: all 0.3s; border: none; font-family: 'Inter', sans-serif; cursor: pointer; }
+  .cta .btn { background: var(--bg); color: var(--ink); }
+  .cta .btn:hover { background: var(--accent); color: var(--bg); }
+
+  footer { border-top: 1px solid var(--line); padding: 48px 0 32px; margin-top: 60px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
+  footer a { color: inherit; text-decoration: none; transition: color 0.2s; }
+  footer a:hover { color: var(--accent); }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 0.3em; color: var(--ink); text-transform: uppercase; }
+  @media (max-width: 600px) { footer .wrap { flex-direction: column; text-align: center; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="logo">Моно <span>изакая</span></a>
+  <nav class="topnav">
+    <a href="about.html">О нас</a>
+    <a href="menu.html">Меню</a>
+    <a href="bento.html" class="active">Ланч</a>
+    <a href="atmo.html">Атмосфера</a>
+    <a href="contact.html">Контакты</a>
+  </nav>
+  <a href="tel:+79954759090" class="top-phone">+7 995 475-90-90</a>
+  <button class="burger" id="burger" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="about.html">О нас</a>
+  <a href="menu.html">Меню</a>
+  <a href="bento.html">Ланч</a>
+  <a href="atmo.html">Атмосфера</a>
+  <a href="contact.html">Контакты</a>
+  <a href="tel:+79954759090" class="mobile-phone">+7 995 475-90-90</a>
+</div>
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="breadcrumbs"><a href="index.html">Главная</a> · <span>Бенто-ланч</span></div>
+    <h1>Бенто-<em>ланч</em></h1>
+    <p>Четыре варианта бенто каждый день с 12:00 до 16:00. Полноценный обед по фиксированной цене.</p>
+  </div>
+</section>
+
+<section style="padding-top: 0;">
+  <div class="wrap">
+
+    <div class="bento-hero">
+      <div class="bento-hero-image">
+        <img src="images/food-2.png" alt="Бенто-ланч Моно изакая">
+      </div>
+      <div class="bento-info">
+        <span class="section-num">01 — Ланч</span>
+        <h2>Полноценный обед <em>каждый день</em></h2>
+        <p>С понедельника по воскресенье, с 12:00 до 16:00 — четыре варианта бенто по фиксированной цене. Каждый набор — это несколько блюд: салат, горячее, рис или лапша и маки. Полноценный обед, который не нужно выбирать по меню.</p>
+      </div>
+    </div>
+
+    <div class="info-bar">
+      <div class="info-item">
+        <div class="info-item-label">Время</div>
+        <div class="info-item-value">12:00 — 16:00</div>
+      </div>
+      <div class="info-item">
+        <div class="info-item-label">Цена</div>
+        <div class="info-item-value"><em>690 ₽</em></div>
+      </div>
+      <div class="info-item">
+        <div class="info-item-label">Вариантов</div>
+        <div class="info-item-value">4</div>
+      </div>
+      <div class="info-item">
+        <div class="info-item-label">Дней в неделю</div>
+        <div class="info-item-value">7</div>
+      </div>
+    </div>
+
+    <div class="bento-grid">
+      <div class="bento-card">
+        <div class="bento-num">Бенто 01</div>
+        <h3>С лососем</h3>
+        <p>Капуста кимчи, чука салат с ореховым соусом, жареный рис с цыплёнком карааге, маки с лососем.</p>
+        <div class="bento-price">690 ₽</div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-num">Бенто 02</div>
+        <h3>С тунцом</h3>
+        <p>Маринованный бамбук, овощная нарезка с творожным сыром, лапша с овощами и цыплёнком су-вид, маки с тунцом.</p>
+        <div class="bento-price">690 ₽</div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-num">Бенто 03</div>
+        <h3>С креветками</h3>
+        <p>Маринованный муэр и ледяной гриб, салат с ростбифом, лапша с овощами и тигровыми креветками, маки с огурцом.</p>
+        <div class="bento-price">690 ₽</div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-num">Бенто 04</div>
+        <h3>Со свининой</h3>
+        <p>Огурцы кимчи, салат с крабом, жареный рис со свининой чашу, маки с авокадо.</p>
+        <div class="bento-price">690 ₽</div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <h2>Забронируйте <em>стол</em></h2>
+      <p>Ланч доступен с 12:00 до 16:00 каждый день. Ждём вас.</p>
+      <a href="tel:+79954759090" class="btn">Забронировать</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-logo">Моно изакая</div>
+    <div>© 2026 · ИП Шмакова Е.В.</div>
+    <div>
+      <a href="https://vk.com/monoizakay">ВКонтакте</a> ·
+      <a href="https://t.me/monorest74">Telegram</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const burger = document.getElementById('burger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+    document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+  });
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      burger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+</script>
+
+</body>
+</html>

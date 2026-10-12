@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Меню — Моно изакая</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #efe9df;
+    --ink: #1a1a1a;
+    --muted: #4a443c;
+    --line: #d6cdbf;
+    --accent: #8b2c2c;
+    --card: #f5f0e8;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; overflow-x: hidden; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+  @media (max-width: 500px) { .wrap { padding: 0 20px; } }
+
+  .topbar { position: fixed; top: 0; left: 0; right: 0; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 100; background: rgba(239,233,223,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .logo { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 20px; letter-spacing: 0.25em; color: var(--ink); text-decoration: none; text-transform: uppercase; z-index: 102; }
+  .logo span { color: var(--accent); }
+  .topnav { display: flex; gap: 32px; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .topnav a { color: var(--muted); text-decoration: none; transition: color 0.2s; padding: 4px 0; }
+  .topnav a:hover { color: var(--accent); }
+  .topnav a.active { color: var(--accent); }
+  .top-phone { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink); text-decoration: none; padding: 8px 16px; border: 1px solid var(--line); transition: all 0.2s; }
+  .top-phone:hover { border-color: var(--accent); color: var(--accent); }
+
+  .burger { display: none; background: none; border: none; cursor: pointer; padding: 8px; z-index: 102; }
+  .burger span { display: block; width: 22px; height: 1.5px; background: var(--ink); margin: 5px 0; transition: all 0.3s; }
+  .burger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); background: var(--accent); }
+  .burger.open span:nth-child(2) { opacity: 0; }
+  .burger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); background: var(--accent); }
+
+  .mobile-menu { position: fixed; inset: 0; background: var(--bg); z-index: 101; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .mobile-menu.open { opacity: 1; pointer-events: all; }
+  .mobile-menu a { font-family: 'Cormorant Garamond', serif; font-size: 26px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); text-decoration: none; }
+  .mobile-menu .mobile-phone { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); margin-top: 20px; padding: 14px 28px; border: 1px solid var(--accent); }
+
+  @media (max-width: 900px) { .topnav { display: none; } .top-phone { display: none; } .burger { display: block; } }
+
+  .page-head { padding: 160px 0 40px; text-align: center; }
+  @media (max-width: 600px) { .page-head { padding: 120px 0 30px; } }
+  .breadcrumbs { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 28px; }
+  .breadcrumbs a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .breadcrumbs a:hover { color: var(--accent); }
+  .breadcrumbs span { color: var(--accent); }
+  .page-head h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(48px, 9vw, 110px); font-weight: 600; line-height: 0.95; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
+  .page-head h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+  .page-head p { font-size: 15px; color: var(--muted); max-width: 560px; margin: 0 auto; }
+
+  .filters { position: sticky; top: 62px; z-index: 50; background: rgba(239,233,223,0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 16px 0; margin-bottom: 48px; }
+  .filters .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; justify-content: center; }
+  .filters .wrap::-webkit-scrollbar { display: none; }
+  .filter-btn { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; padding: 10px 18px; background: transparent; border: 1px solid var(--line); color: var(--muted); cursor: pointer; transition: all 0.25s; font-weight: 400; white-space: nowrap; flex-shrink: 0; }
+  .filter-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .filter-btn.active { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  @media (max-width: 900px) { .filters .wrap { justify-content: flex-start; } }
+
+  .category { margin-bottom: 72px; }
+  .category-head { text-align: center; margin-bottom: 32px; }
+  .category-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.25em; margin-bottom: 12px; }
+  .category-head h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4.5vw, 44px); font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+  .category-count { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.15em; margin-top: 12px; display: block; }
+
+  /* DISHES LIST (без фото) */
+  .dishes { display: flex; flex-direction: column; }
+  .dish { display: grid; grid-template-columns: 1fr auto; gap: 32px; padding: 24px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+  .dish:last-child { border-bottom: none; }
+  .dish-info h3 { font-family: 'Cormorant Garamond', serif; font-size: clamp(19px, 2.2vw, 24px); font-weight: 600; line-height: 1.25; margin-bottom: 8px; letter-spacing: 0.03em; }
+  .dish-desc { font-size: 13px; color: var(--muted); line-height: 1.7; max-width: 720px; }
+  .dish-price { font-family: 'JetBrains Mono', monospace; font-size: 16px; color: var(--ink); font-weight: 400; white-space: nowrap; letter-spacing: 0.05em; }
+  @media (max-width: 600px) { .dish { grid-template-columns: 1fr; gap: 8px; } .dish-price { font-size: 15px; } }
+  .category.hidden { display: none; }
+
+  /* DISHES GRID (с фото, только первые 3) */
+  .dishes-featured {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 48px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--line);
+  }
+  .dish-card {
+    background: var(--bg);
+    overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.19,1,0.22,1);
+  }
+  .dish-card:hover { transform: translateY(-6px); }
+  .dish-card-image {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  .dish-card-image img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.19,1,0.22,1);
+  }
+  .dish-card:hover .dish-card-image img { transform: scale(1.05); }
+  .dish-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    letter-spacing: 0.03em;
+  }
+  .dish-card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .dish-card .dish-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    color: var(--ink);
+  }
+
+  .cta { background: var(--ink); color: var(--bg); padding: 72px 48px; text-align: center; }
+  @media (max-width: 600px) { .cta { padding: 48px 24px; } }
+  .cta h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 5vw, 56px); font-weight: 600; line-height: 1.05; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; }
+  .cta h2 em { font-style: italic; color: var(--accent); }
+  .cta p { color: rgba(239,233,223,0.7); margin-bottom: 32px; font-size: 15px; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 32px; font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none; transition: all 0.3s; border: none; font-family: 'Inter', sans-serif; cursor: pointer; }
+  .cta .btn { background: var(--bg); color: var(--ink); }
+  .cta .btn:hover { background: var(--accent); color: var(--bg); }
+
+  footer { border-top: 1px solid var(--line); padding: 48px 0 32px; margin-top: 60px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
+  footer a { color: inherit; text-decoration: none; transition: color 0.2s; }
+  footer a:hover { color: var(--accent); }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 0.3em; color: var(--ink); text-transform: uppercase; }
+  @media (max-width: 600px) { footer .wrap { flex-direction: column; text-align: center; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="logo">Моно <span>изакая</span></a>
+  <nav class="topnav">
+    <a href="about.html">О нас</a>
+    <a href="menu.html" class="active">Меню</a>
+    <a href="bento.html">Ланч</a>
+    <a href="atmo.html">Атмосфера</a>
+    <a href="contact.html">Контакты</a>
+  </nav>
+  <a href="tel:+79954759090" class="top-phone">+7 995 475-90-90</a>
+  <button class="burger" id="burger" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="about.html">О нас</a>
+  <a href="menu.html">Меню</a>
+  <a href="bento.html">Ланч</a>
+  <a href="atmo.html">Атмосфера</a>
+  <a href="contact.html">Контакты</a>
+  <a href="tel:+79954759090" class="mobile-phone">+7 995 475-90-90</a>
+</div>
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="breadcrumbs"><a href="index.html">Главная</a> · <span>Меню</span></div>
+    <h1>Полное <em>меню</em></h1>
+    <p>Рамены, воки, поке, кимчи и закуски. Всё, что есть на кухне — с ценами и описаниями.</p>
+  </div>
+</section>
+
+<div class="filters">
+  <div class="wrap">
+    <button class="filter-btn active" data-filter="all">Всё</button>
+    <button class="filter-btn" data-filter="salads">Салаты</button>
+    <button class="filter-btn" data-filter="appetizers">Закуски</button>
+    <button class="filter-btn" data-filter="kimchi">Кимчи</button>
+    <button class="filter-btn" data-filter="ramen">Рамены</button>
+    <button class="filter-btn" data-filter="wok">Вок</button>
+    <button class="filter-btn" data-filter="bento">Ланч</button>
+    <button class="filter-btn" data-filter="drinks">Напитки</button>
+    <button class="filter-btn" data-filter="desserts">Десерты</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- САЛАТЫ И ПОКЕ — с фото для первых трёх -->
+  <section class="category" data-category="salads">
+    <div class="category-head"><div class="category-num">01</div><h2>Салаты и поке</h2><span class="category-count">7 позиций</span></div>
+
+    <div class="dishes-featured">
+
+      <div class="dish-card">
+        <div class="dish-card-image">
+          <img src="images/food-1.png" alt="Легендарные хрустящие баклажаны">
+        </div>
+        <h3>Легендарные хрустящие баклажаны</h3>
+        <p>Баклажаны после обжарки становятся золотистыми и аппетитно хрустящими снаружи, оставаясь нежными внутри. Сочные помидоры черри и творожный сыр, мёд и рисовый уксус, соевый и устричный соусы, чесночно-имбирная паста, соус свит чили, перец Шичими, кинза и кунжут.</p>
+        <div class="dish-price">490 ₽</div>
+      </div>
+
+      <div class="dish-card">
+        <div class="dish-card-image">
+          <img src="images/food-2.png" alt="Салат с камчатским крабом и авокадо">
+        </div>
+        <h3>Салат с камчатским крабом и авокадо</h3>
+        <p>Хрустящие листья салата, спелые томаты, авокадо и мясо камчатского краба. Чёрная икра тобико. Заправка: соус айоли-чили, свит чили, Шисо таре и креветочное масло.</p>
+        <div class="dish-price">890 ₽</div>
+      </div>
+
+      <div class="dish-card">
+        <div class="dish-card-image">
+          <img src="images/food-3.png" alt="Салат с ростбифом, кукурузой гриль и гранатовым терияки">
+        </div>
+        <h3>Салат с ростбифом, кукурузой гриль и гранатовым терияки</h3>
+        <p>Нежный ростбиф из говяжьей вырезки, листья салата и шпинат, кукуруза гриль, помидоры черри, хрустящие огурцы. Соусы терияки и наршараб.</p>
+        <div class="dish-price">850 ₽</div>
+      </div>
+
+    </div>
+
+    <div class="dishes">
+      <div class="dish"><div class="dish-info"><h3>Поке с лососем</h3><p class="dish-desc">Сочный лосось, сливочное авокадо, хрустящие эдамаме, помидоры черри. Заправка: соевый соус, свит чили, имбирно-чесночная основа.</p></div><div class="dish-price">750 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Поке с креветками</h3><p class="dish-desc">Сочные креветки, авокадо, эдамаме, черри. Заправка: соевый соус, свит чили, имбирь и чеснок.</p></div><div class="dish-price">750 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Поке с тунцом</h3><p class="dish-desc">Свежий тунец, авокадо, эдамаме, помидоры черри. Соус свит чили, чеснок, корень имбиря, лемонграсс, листья лайма.</p></div><div class="dish-price">750 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Поке с крабом</h3><p class="dish-desc">Листья салата, томаты, авокадо, мясо камчатского краба. Икра тобико, айоли-чили, свит чили, Шисо таре, креветочное масло.</p></div><div class="dish-price">890 ₽</div></div>
+    </div>
+  </section>
+
+  <section class="category" data-category="appetizers">
+    <div class="category-head"><div class="category-num">02</div><h2>Закуски</h2><span class="category-count">9 позиций</span></div>
+    <div class="dishes">
+      <div class="dish"><div class="dish-info"><h3>Хрустящие креветки, соус айоли-чили</h3><p class="dish-desc">Креветки в темпуре с многослойной панировкой, кинза, сушёные нити перца чили. Приправа умами на базе водорослей нори, анчоусов и стружки тунца.</p></div><div class="dish-price">850 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Пончики с крабом и умами</h3><p class="dish-desc">Золотистые пончики с начинкой из краба и творожного сыра. Соус васаби-майо, соевый соус, кунжутное масло, лимонный фреш.</p></div><div class="dish-price">490 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Цыплёнок карааге</h3><p class="dish-desc">Филе куриной грудки в маринаде: соевый соус Амой, устричный соус, терияки, мёд, японский мирин, чесночно-имбирная паста, рисовый уксус и лимонный фреш.</p></div><div class="dish-price">490 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Попкорн из креветок с кремом из авокадо</h3><p class="dish-desc">Креветки в маринаде с соевым соусом Амой, чесноком, кунжутным маслом и наршарабом. Крем из авокадо, томаты конкассе, соус Шио Таре.</p></div><div class="dish-price">750 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Маринованный бамбук</h3><p class="dish-desc">Хрустящие стебли бамбука в маринаде терияки и наршараб. Водоросли вакаме, кунжут.</p></div><div class="dish-price">290 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Маринованный муэр и ледяной гриб</h3><p class="dish-desc">Древесный гриб муэр и ледяной гриб в соусе терияки и наршараб. Водоросли нори, кунжут.</p></div><div class="dish-price">290 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Картофель фри с ао-нори и соусом васаби</h3><p class="dish-desc">Хрустящий картофель фри с водорослями ао-нори и приправой умами. Соус васаби-майонез с соевым соусом Амой, лимонным фрешем и сгущённым молоком.</p></div><div class="dish-price">290 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Яйца адзитама с айоли-чили</h3><p class="dish-desc">Яйца адзитама в маринаде из соевого соуса и мирина, кунжутное масло. Соус айоли-чили с перцем Шичими и свит чили.</p></div><div class="dish-price">290 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Паровая булочка бао</h3><p class="dish-desc">Мягкая паровая булочка бао.</p></div><div class="dish-price">90 ₽</div></div>
+    </div>
+  </section>
+
+  <section class="category" data-category="kimchi">
+    <div class="category-head"><div class="category-num">03</div><h2>Кимчи</h2><span class="category-count">3 позиции</span></div>
+    <div class="dishes">
+      <div class="dish"><div class="dish-info"><h3>Черри кимчи</h3><p class="dish-desc">Помидоры черри в маринаде с чесноком, корнем имбиря и перцем чили. Лемонграсс, листья лайма, соевый соус Амой, свит чили, перец Шичими, кунжут.</p></div><div class="dish-price">250 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Капуста кимчи</h3><p class="dish-desc">Пекинская капуста после ферментации, груша и яблоко для сладости, чеснок и корень имбиря, рыбный соус, перец Шичими.</p></div><div class="dish-price">250 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Сет кимчи: огурцы, капуста, ананасы, черри</h3><p class="dish-desc">Яркий сет из азиатских закусок. 240 г.</p></div><div class="dish-price">990 ₽</div></div>
+    </div>
+  </section>
+
+  <section class="category" data-category="ramen">
+    <div class="category-head"><div class="category-num">04</div><h2>Рамены</h2><span class="category-count">5 позиций</span></div>
+    <div class="dishes">
+      <div class="dish"><div class="dish-info"><h3>Рамен со свининой Чашу</h3><p class="dish-desc">Богатый бульон на тушке курицы, куриных лапках и свинине. Свиная шея чашу, лапша собственного приготовления, анчоусы, водоросли комбу, стружка тунца, грибы шиитаке, маринованное яйцо. Перец чили, масло маю.</p></div><div class="dish-price">790 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Рамен с ростбифом и бамбуком</h3><p class="dish-desc">Мясной, насыщенный, умами. Ростбиф даёт выраженную мясную ноту, бамбук — свежий хрустящий контраст.</p></div><div class="dish-price">890 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Рамен с цыплёнком</h3><p class="dish-desc">Насыщенный бульон на курином и свином мясе, чеснок, корень имбиря, репчатый лук. Анчоусы, шиитаке, комбу, стружка тунца. Филе куриной грудки чашу, соус Шио Таре, маринованное яйцо, ростки сои.</p></div><div class="dish-price">790 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Чеддер рамен с уткой су-вид и жареным дошиком</h3><p class="dish-desc">Насыщенный бульон с умами-ингредиентами. Соус Шисо Таре. Сыр чеддер для сливочной насыщенности, утиная грудка су-вид, кукуруза, жареная лапша.</p></div><div class="dish-price">790 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Императорский рамен том-ям</h3><p class="dish-desc">Союз японской и тайской кухни. Паста том-ям, лемонграсс, листья лайма, перец чили, корень имбиря, рыбный соус. Креветки и кальмары, черри, лапша.</p></div><div class="dish-price">890 ₽</div></div>
+    </div>
+  </section>
+
+  <section class="category" data-category="wok">
+    <div class="category-head"><div class="category-num">05</div><h2>Вок</h2><span class="category-count">6 позиций</span></div>
+    <div class="dishes">
+      <div class="dish"><div class="dish-info"><h3>Жареный рис с креветками</h3><p class="dish-desc">Рис жасмин, сочные креветки, болгарский перец, цукини, красный лук, куриное яйцо. Паста карри и паста кочудян.</p></div><div class="dish-price">750 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Жареный рис карри с уткой и гранатовым терияки</h3><p class="dish-desc">Рис жасмин, утиная грудка су-вид, овощи, кукуруза. Паста карри, соусы терияки и наршараб.</p></div><div class="dish-price">750 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Жареный рис со свининой Тонкацу и бамбуком</h3><p class="dish-desc">Рис жасмин, свинина ча-шу су-вид, болгарский перец, цукини, красный лук, маринованные стебли бамбука.</p></div><div class="dish-price">750 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Лапша с морепродуктами том-ям</h3><p class="dish-desc">Острая кислинка том-яма, лапша, морепродукты, стручковая фасоль, красный лук, болгарский перец, цукини. Соус том-ям, сушёные нити перца.</p></div><div class="dish-price">790 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Лапша карбонара по-азиатски</h3><p class="dish-desc">Азиатская интерпретация классической карбонары.</p></div><div class="dish-price">690 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Ролл с тунцом, ананасом кимчи и эдамаме</h3><p class="dish-desc">Филе тунца, творожный сыр, бобы эдамаме, ананасы кимчи. Соус копчёный понзу.</p></div><div class="dish-price">890 ₽</div></div>
+    </div>
+  </section>
+
+  <section class="category" data-category="bento">
+    <div class="category-head"><div class="category-num">06</div><h2>Бенто-ланч</h2><span class="category-count">4 позиции</span></div>
+    <div class="dishes">
+      <div class="dish"><div class="dish-info"><h3>Бенто 1</h3><p class="dish-desc">Капуста кимчи, чука салат с ореховым соусом, жареный рис с цыплёнком карааге, маки с лососем.</p></div><div class="dish-price">690 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Бенто 2</h3><p class="dish-desc">Маринованный бамбук, овощная нарезка с творожным сыром, лапша с овощами и цыплёнком су-вид, маки с тунцом.</p></div><div class="dish-price">690 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Бенто 3</h3><p class="dish-desc">Маринованный муэр и ледяной гриб, салат с ростбифом, лапша с овощами и тигровыми креветками, маки с огурцом.</p></div><div class="dish-price">690 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Бенто 4</h3><p class="dish-desc">Огурцы кимчи, салат с крабом, жареный рис со свининой чашу, маки с авокадо.</p></div><div class="dish-price">690 ₽</div></div>
+    </div>
+  </section>
+
+  <section class="category" data-category="drinks">
+    <div class="category-head"><div class="category-num">07</div><h2>Напитки</h2><span class="category-count">13 позиций</span></div>
+    <div class="dishes">
+      <div class="dish"><div class="dish-info"><h3>Айс-латте Лаванда — Смородина</h3></div><div class="dish-price">250 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Лимонад Клубника — Ваниль</h3></div><div class="dish-price">230 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Холодный чай Личи — Лемонграсс</h3></div><div class="dish-price">230 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Эспрессо</h3></div><div class="dish-price">120 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Американо</h3></div><div class="dish-price">120 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Капучино</h3></div><div class="dish-price">160 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Латте</h3></div><div class="dish-price">170 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Ванильный раф</h3></div><div class="dish-price">170 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Листовой чай</h3></div><div class="dish-price">190 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Домашний чай Персик — Личи</h3></div><div class="dish-price">290 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Домашний чай Камаманси — Маракуйя</h3></div><div class="dish-price">290 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Балтика 0</h3></div><div class="dish-price">350 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Мисо суп с тофу и шиитаке</h3></div><div class="dish-price">190 ₽</div></div>
+    </div>
+  </section>
+
+  <section class="category" data-category="desserts">
+    <div class="category-head"><div class="category-num">08</div><h2>Десерты</h2><span class="category-count">2 позиции</span></div>
+    <div class="dishes">
+      <div class="dish"><div class="dish-info"><h3>Моти картошка</h3><p class="dish-desc">Моти с картофельной начинкой.</p></div><div class="dish-price">390 ₽</div></div>
+      <div class="dish"><div class="dish-info"><h3>Брауни с кремом из варёной сгущёнки и свежими фруктами</h3><p class="dish-desc">Шоколадный брауни с кремом из варёной сгущёнки и свежими фруктами.</p></div><div class="dish-price">190 ₽</div></div>
+    </div>
+  </section>
+
+  <div class="cta">
+    <h2>Приходите <em>попробовать</em></h2>
+    <p>Забронируйте стол — мы работаем каждый день с 12:00 до 01:00.</p>
+    <a href="tel:+79954759090" class="btn">Забронировать</a>
+  </div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-logo">Моно изакая</div>
+    <div>© 2026 · ИП Шмакова Е.В.</div>
+    <div>
+      <a href="https://vk.com/monoizakay">ВКонтакте</a> ·
+      <a href="https://t.me/monorest74">Telegram</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const burger = document.getElementById('burger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+    document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+  });
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      burger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const categories = document.querySelectorAll('.category');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      categories.forEach(cat => {
+        if (filter === 'all' || cat.dataset.category === filter) {
+          cat.classList.remove('hidden');
+        } else {
+          cat.classList.add('hidden');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
